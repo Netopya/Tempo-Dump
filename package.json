@@ -1,0 +1,11 @@
+{
+	"name": "tempodump",
+	"version": "0.0.1",
+	"private": false,
+	"description": "A fast Tempo time logging app",
+	"author": "Netopya",
+	"license": "UNLICENSED",
+	"dependencies": {
+		"@vue/cli": "4.4.4"
+	}
+}
