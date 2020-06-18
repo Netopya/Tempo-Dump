@@ -14,6 +14,17 @@
 		</transition>
 		<!-- <img alt="Vue logo" src="./assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/> -->
+
+		<transition name="fade-scroll">
+			<div class="container mt-5">
+				<form v-if="tempoKey && jiraKey && selectedActivities.length">
+					<Worklog v-for="worklog in worklogs"
+						:key="worklogs.indexOf(worklog)"
+						:activities="selectedActivities"
+						:jiraKey="jiraKey"/>
+				</form>
+			</div>
+		</transition>
 	</div>
 </template>
 
@@ -21,19 +32,22 @@
 //import HelloWorld from './components/HelloWorld.vue'
 import KeyStep from './components/KeyStep.vue'
 import ActivitiesSelector from './components/ActivitiesSelector.vue'
+import Worklog from './components/Worklog.vue'
 
 export default {
 	name: 'App',
 	components: {
 		// HelloWorld
 		KeyStep,
-		ActivitiesSelector
+		ActivitiesSelector,
+		Worklog
 	},
 	data() {
 		return {
 			tempoKey: '',
 			jiraKey: '',
-			selectedActivities: []
+			selectedActivities: [],
+			worklogs: ['foo', 'bar']
 		};
 	},
 	computed: {
