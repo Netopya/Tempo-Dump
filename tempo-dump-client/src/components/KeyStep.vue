@@ -2,7 +2,7 @@
 	<div class="container mt-5">
 		<div class="row justify-content-center">
 			<form class="col-6 text-center" @submit.prevent="save">
-				<input type="text" class="form-control mb-3" placeholder="Tempo Key" :value="value" @input="tempoKey = $event.target.value"/>
+				<input type="text" class="form-control mb-3" :placeholder="keyName" :value="value" @input="keyValue = $event.target.value"/>
 				<button class="btn btn-success btn-lg">Save</button>
 			</form>
 		</div>
@@ -14,15 +14,16 @@ export default {
 	name: 'KeyStep',
 	data() {
 		return {
-			tempoKey: ''
+			keyValue: ''
 		}
 	},
 	props: {
-		value: String
+		value: String,
+		keyName: String
 	},
 	methods: {
 		save() {
-			this.$emit('input', this.tempoKey)
+			this.$emit('input', this.keyValue)
 		}
 	}
 }

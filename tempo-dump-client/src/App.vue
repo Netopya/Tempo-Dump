@@ -4,10 +4,13 @@
 			<h1>Welcome to Tempo Dump</h1>
 		</div>
 		<transition name="fade-scroll">
-			<KeyStep v-model="tempoKeyEdit" v-if="!tempoKey"/>
+			<KeyStep v-model="tempoKeyEdit" keyName="Tempo Key" v-if="!tempoKey"/>
 		</transition>
 		<transition name="fade-scroll">
-			<ActivitiesSelector :tempoKey="tempoKey" v-if="tempoKey && !selectedActivities.length" v-model="selectedActivitiesEdit"/>
+			<KeyStep v-model="jiraKeyEdit" keyName="Jira Key" v-if="tempoKey && !jiraKey"/>
+		</transition>
+		<transition name="fade-scroll">
+			<ActivitiesSelector :tempoKey="tempoKey" v-if="tempoKey && jiraKey && !selectedActivities.length" v-model="selectedActivitiesEdit"/>
 		</transition>
 		<!-- <img alt="Vue logo" src="./assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/> -->
@@ -29,6 +32,7 @@ export default {
 	data() {
 		return {
 			tempoKey: '',
+			jiraKey: '',
 			selectedActivities: []
 		};
 	},
@@ -60,6 +64,19 @@ export default {
 					alert('Failed to save attribute preferences');
 				}
 			}
+		},
+		jiraKeyEdit: {
+			get() {
+				return this.jiraKey;
+			},
+			set(value) {
+				try {
+					localStorage.setItem('jiraKey', value);
+					this.jiraKey = value;
+				} catch(exception) {
+					alert('Failed to save Jira Key');
+				}
+			}
 		}
 	},
 	created() {
@@ -67,6 +84,8 @@ export default {
 
 		let attributes_store = localStorage.getItem('selectedActivities');
 		this.selectedActivities = attributes_store ? JSON.parse(attributes_store) : [];
+
+		this.jiraKey = localStorage.getItem('jiraKey');
 	}
 }
 </script>
