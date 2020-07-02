@@ -21,12 +21,14 @@
 		<transition name="fade-scroll">
 			<div class="container mt-5" v-if="tempoKey && jiraEmail && jiraKey && selectedActivities.length">
 				<form>
-					<Worklog v-for="(worklog, index) in worklogs"
-						:key="index"
-						:activities="selectedActivities"
-						:jiraKey="jiraKey"
-						:email="jiraEmail"
-						:worklog="worklog"/>
+					<transition-group name="fade-scroll-up" tag="p">
+						<Worklog v-for="(worklog, index) in worklogs"
+							:key="index"
+							:activities="selectedActivities"
+							:jiraKey="jiraKey"
+							:email="jiraEmail"
+							:worklog="worklog"/>
+					</transition-group>
 				</form>
 			</div>
 		</transition>
@@ -172,6 +174,10 @@ export default {
 	animation: slide-out .5s;
 }
 
+.fade-scroll-up-enter-active {
+	animation: slide-up .5s;
+}
+
 @keyframes slide-in {
 	from {
 		transform: translateX(50px);
@@ -191,6 +197,17 @@ export default {
 	to {
 		transform: translateX(-50px);
 		opacity: 0;
+	}
+}
+
+@keyframes slide-up {
+	from {
+		transform: translateY(40px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
 	}
 }
 </style>
