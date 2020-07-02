@@ -7,21 +7,25 @@
 			<KeyStep v-model="tempoKeyEdit" keyName="Tempo Key" v-if="!tempoKey"/>
 		</transition>
 		<transition name="fade-scroll">
-			<KeyStep v-model="jiraKeyEdit" keyName="Jira Key" v-if="tempoKey && !jiraKey"/>
+			<KeyStep v-model="jiraEmailEdit" keyName="Jira Email" v-if="tempoKey && !jiraEmail"/>
 		</transition>
 		<transition name="fade-scroll">
-			<ActivitiesSelector :tempoKey="tempoKey" v-if="tempoKey && jiraKey && !selectedActivities.length" v-model="selectedActivitiesEdit"/>
+			<KeyStep v-model="jiraKeyEdit" keyName="Jira Key" v-if="tempoKey && jiraEmail && !jiraKey"/>
+		</transition>
+		<transition name="fade-scroll">
+			<ActivitiesSelector :tempoKey="tempoKey" v-if="tempoKey && jiraEmail && jiraKey && !selectedActivities.length" v-model="selectedActivitiesEdit"/>
 		</transition>
 		<!-- <img alt="Vue logo" src="./assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/> -->
 
 		<transition name="fade-scroll">
-			<div class="container mt-5">
-				<form v-if="tempoKey && jiraKey && selectedActivities.length">
+			<div class="container mt-5" v-if="tempoKey && jiraEmail && jiraKey && selectedActivities.length">
+				<form>
 					<Worklog v-for="worklog in worklogs"
 						:key="worklogs.indexOf(worklog)"
 						:activities="selectedActivities"
-						:jiraKey="jiraKey"/>
+						:jiraKey="jiraKey"
+						:email="jiraEmail"/>
 				</form>
 			</div>
 		</transition>
@@ -46,6 +50,7 @@ export default {
 		return {
 			tempoKey: '',
 			jiraKey: '',
+			jiraEmail: '',
 			selectedActivities: [],
 			worklogs: ['foo', 'bar']
 		};
@@ -79,6 +84,19 @@ export default {
 				}
 			}
 		},
+		jiraEmailEdit: {
+			get() {
+				return this.jiraEmail;
+			},
+			set(value) {
+				try {
+					localStorage.setItem('jiraEmail', value);
+					this.jiraEmail = value;
+				} catch(exception) {
+					alert('Failed to save Jira Email');
+				}
+			}
+		},
 		jiraKeyEdit: {
 			get() {
 				return this.jiraKey;
@@ -100,6 +118,7 @@ export default {
 		this.selectedActivities = attributes_store ? JSON.parse(attributes_store) : [];
 
 		this.jiraKey = localStorage.getItem('jiraKey');
+		this.jiraEmail = localStorage.getItem('jiraEmail');
 	}
 }
 </script>

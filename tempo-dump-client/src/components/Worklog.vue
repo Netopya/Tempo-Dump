@@ -38,16 +38,26 @@ export default {
 	},
 	props: {
 		activities: Array,
-		jiraKey: String
+		jiraKey: String,
+		email: String
 	},
 	created() {
 		this.deboucedJiraUpdate = _.throttle(this.updateJiraTicket, 1000);
 	},
 	methods: {
 		updateJiraTicket() {
+			// let params = new URLSearchParams();
+			// params.append('Authorization', `Basic: ${this.jiraKey}`);
+			// axios.post('https://diffagency.atlassian.net/rest/api/3/issue/FOX-1', params)
+			// 	.then((resp) => {
+			// 		console.log(resp.data);
+			// 	});
+
 			let params = new URLSearchParams();
-			params.append('Authorization', `Basic: ${this.jiraKey}`);
-			axios.post('https://diffagency.atlassian.net/rest/api/3/issue/FOX-1', params)
+			params.append('auth_key', this.jiraKey);
+			params.append('issue', 'FOX-1');
+			params.append('email', this.email);
+			axios.post('http://www.netopyaplanet.com/tempodump/issue.php', params)
 				.then((resp) => {
 					console.log(resp.data);
 				});
