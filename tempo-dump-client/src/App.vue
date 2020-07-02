@@ -21,11 +21,12 @@
 		<transition name="fade-scroll">
 			<div class="container mt-5" v-if="tempoKey && jiraEmail && jiraKey && selectedActivities.length">
 				<form>
-					<Worklog v-for="worklog in worklogs"
-						:key="worklogs.indexOf(worklog)"
+					<Worklog v-for="(worklog, index) in worklogs"
+						:key="index"
 						:activities="selectedActivities"
 						:jiraKey="jiraKey"
-						:email="jiraEmail"/>
+						:email="jiraEmail"
+						:worklog="worklog"/>
 				</form>
 			</div>
 		</transition>
@@ -52,7 +53,10 @@ export default {
 			jiraKey: '',
 			jiraEmail: '',
 			selectedActivities: [],
-			worklogs: ['foo', 'bar']
+			worklogs: [{
+				issue: '',
+				empty: true
+			}]
 		};
 	},
 	computed: {
@@ -119,6 +123,33 @@ export default {
 
 		this.jiraKey = localStorage.getItem('jiraKey');
 		this.jiraEmail = localStorage.getItem('jiraEmail');
+	},
+	methods: {
+		createTimelog() {
+			this.worklogs.push({
+				issue: '',
+				empty: true
+			})
+		}
+	},
+	watch: {
+		worklogs: {
+			handler() {
+				if (!this.worklogs.length) {
+					return;
+				}
+
+				if (!this.worklogs[this.worklogs.length - 1].empty) {
+					this.createTimelog();
+					this.$nextTick(() => {
+						setTimeout(() => {
+							this.$el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+						}, 100);
+					});
+				}
+			},
+			deep: true
+		}
 	}
 }
 </script>

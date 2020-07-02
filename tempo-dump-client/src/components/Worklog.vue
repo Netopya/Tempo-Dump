@@ -2,8 +2,9 @@
 	<div class="row">
 		<div class="col">
 			<label class="d-block">
-				<input type="text" class="form-control" name="ticket[]" placeholder="Ticket Key" v-model="ticketKey">
+				<input type="text" class="form-control" name="ticket[]" placeholder="Ticket Key" v-model="worklog.issue">
 			</label>
+			<div><img v-if="icon" :src="icon"/> {{ title }}</div>
 		</div>
 		<div class="col">
 			<label class="d-block">
@@ -33,13 +34,17 @@ export default {
 	name: 'Worklog',
 	data() {
 		return {
-			ticketKey: ''
+			title: '',
+			icon: ''
 		};
 	},
 	props: {
 		activities: Array,
 		jiraKey: String,
-		email: String
+		email: String,
+		worklog: Object
+	},
+	computed: {
 	},
 	created() {
 		this.deboucedJiraUpdate = _.throttle(this.updateJiraTicket, 1000);
@@ -55,13 +60,42 @@ export default {
 
 			let params = new URLSearchParams();
 			params.append('auth_key', this.jiraKey);
-			params.append('issue', 'FOX-1');
+			params.append('issue', this.worklog.issue);
 			params.append('email', this.email);
 			axios.post('http://www.netopyaplanet.com/tempodump/issue.php', params)
 				.then((resp) => {
 					console.log(resp.data);
+
+					const data = resp.data;
+
+					try {
+						this.title = data.fields.summary;
+					} catch(ex) {
+						this.title = '';
+					}
+
+					try {
+						this.icon = data.fields.issuetype.iconUrl;
+					} catch(ex) {
+						this.icon = '';
+					}
 				});
 		}
+	},
+	watch: {
+		'worklog.issue': function(value) {
+			this.worklog.issue = value.toUpperCase();
+			this.worklog.empty = !value;
+			this.deboucedJiraUpdate();
+		}
 	}
+	// watch: {
+	// 	worklog: {
+	// 		hander(value) {
+	// 			this.$emit('input', value);
+	// 		},
+	// 		deep: true
+	// 	}
+	// }
 }
 </script>
