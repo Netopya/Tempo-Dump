@@ -57,7 +57,8 @@ export default {
 			selectedActivities: [],
 			worklogs: [{
 				issue: '',
-				empty: true
+				empty: true,
+				seconds: 0
 			}]
 		};
 	},
@@ -130,7 +131,8 @@ export default {
 		createTimelog() {
 			this.worklogs.push({
 				issue: '',
-				empty: true
+				empty: true,
+				seconds: 0
 			})
 		}
 	},

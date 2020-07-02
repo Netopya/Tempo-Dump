@@ -8,7 +8,7 @@
 		</div>
 		<div class="col">
 			<label class="d-block">
-				<input type="text" class="form-control" name="time[]" placeholder="Time spent">
+				<input type="text" class="form-control" name="time[]" placeholder="Time spent" v-model="timeSpent">
 			</label>
 		</div>
 		<div class="col">
@@ -30,6 +30,8 @@
 import _ from 'lodash'
 import axios from 'axios'
 
+const TIME_SPENT_REGEX = /^\D*((?<hours>\d+)[hH])?\D*((?<minutes>\d+)\D*[mM])?\D*$/g;
+
 export default {
 	name: 'Worklog',
 	data() {
@@ -45,6 +47,46 @@ export default {
 		worklog: Object
 	},
 	computed: {
+		timeSpent: {
+			get() {
+				let seconds = this.worklog.seconds;
+				if (isNaN(seconds)) {
+					return '';
+				}
+
+				let h = Math.floor(seconds / 3600);
+				let m = Math.floor(seconds % 3600 / 60);
+
+				let output = '';
+
+				if (h) {
+					output += h + 'h';
+				}
+
+				if (m) {
+					output += m + 'm';
+				}
+
+				return output;
+			},
+			set(value) {
+				let result = TIME_SPENT_REGEX.exec(value);
+				let timeSpent = 0;
+
+				if (!result) {
+					return;
+				}
+
+				if (result.groups.hours) {
+					timeSpent += parseInt(result.groups.hours) * 3600
+				}
+				if (result.groups.minutes) {
+					timeSpent += parseInt(result.groups.minutes) * 60
+				}
+
+				this.worklog.seconds = timeSpent;
+			}
+		}
 	},
 	created() {
 		this.deboucedJiraUpdate = _.throttle(this.updateJiraTicket, 1000);
