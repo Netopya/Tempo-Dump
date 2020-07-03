@@ -41,6 +41,7 @@ import KeyStep from './components/KeyStep.vue'
 import ActivitiesSelector from './components/ActivitiesSelector.vue'
 import Worklog from './components/Worklog.vue'
 import axios from 'axios'
+import moment from 'moment'
 
 function getJiraId(key, email) {
 	let params = new URLSearchParams();
@@ -51,6 +52,8 @@ function getJiraId(key, email) {
 			return resp.data;
 		});
 }
+
+window.moment = moment;
 
 export default {
 	name: 'App',
@@ -143,8 +146,8 @@ export default {
 				empty: true,
 				seconds: 0,
 				description: '',
-				startDate: '',
-				startTime: '',
+				startDate: moment().format('YYYY-MM-DD'),
+				startTime: moment().format('HH:mm:ss'),
 				activity: ''
 			})
 		},
@@ -152,6 +155,21 @@ export default {
 			let { accountId } = await getJiraId(this.jiraKey, this.jiraEmail);
 			console.log(accountId);
 
+			let testlog = this.worklogs[0]
+
+			let params = new URLSearchParams();
+			params.append('auth_key', this.tempoKey);
+			params.append('issue', testlog.issue);
+			params.append('seconds', testlog.seconds);
+			params.append('description', testlog.description);
+			params.append('startDate', testlog.startDate);
+			params.append('startTime', testlog.startTime);
+			params.append('activity', testlog.activity);
+			params.append('accountId', accountId);
+			return axios.post('http://www.netopyaplanet.com/tempodump/post-worklog.php', params)
+				.then((resp) => {
+					return resp.data;
+				});
 		}
 	},
 	watch: {
