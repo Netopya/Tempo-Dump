@@ -29,6 +29,13 @@
 							:email="jiraEmail"
 							:worklog="worklog"/>
 					</transition-group>
+
+					<div class="row">
+						<div class="col display-4">{{ totalTime }}</div>
+						<div class="col text-right">
+							<button class="btn btn-success btn-lg">Log Time</button>
+						</div>
+					</div>
 				</form>
 			</div>
 		</transition>
@@ -40,6 +47,7 @@
 import KeyStep from './components/KeyStep.vue'
 import ActivitiesSelector from './components/ActivitiesSelector.vue'
 import Worklog from './components/Worklog.vue'
+import renderTime from './utilities/renderTime.js'
 import axios from 'axios'
 import moment from 'moment'
 
@@ -126,6 +134,12 @@ export default {
 					alert('Failed to save Jira Key');
 				}
 			}
+		},
+		totalTime() {
+			//return '';
+			return renderTime(this.worklogs.reduce((acc, cur) => {
+				return acc + cur.seconds;
+			}, 0));
 		}
 	},
 	created() {
