@@ -40,6 +40,17 @@
 import KeyStep from './components/KeyStep.vue'
 import ActivitiesSelector from './components/ActivitiesSelector.vue'
 import Worklog from './components/Worklog.vue'
+import axios from 'axios'
+
+function getJiraId(key, email) {
+	let params = new URLSearchParams();
+	params.append('auth_key', key);
+	params.append('email', email);
+	return axios.post('http://www.netopyaplanet.com/tempodump/myself.php', params)
+		.then((resp) => {
+			return resp.data;
+		});
+}
 
 export default {
 	name: 'App',
@@ -55,11 +66,7 @@ export default {
 			jiraKey: '',
 			jiraEmail: '',
 			selectedActivities: [],
-			worklogs: [{
-				issue: '',
-				empty: true,
-				seconds: 0
-			}]
+			worklogs: []
 		};
 	},
 	computed: {
@@ -126,14 +133,25 @@ export default {
 
 		this.jiraKey = localStorage.getItem('jiraKey');
 		this.jiraEmail = localStorage.getItem('jiraEmail');
+
+		this.createTimelog();
 	},
 	methods: {
 		createTimelog() {
 			this.worklogs.push({
 				issue: '',
 				empty: true,
-				seconds: 0
+				seconds: 0,
+				description: '',
+				startDate: '',
+				startTime: '',
+				activity: ''
 			})
+		},
+		async logTime() {
+			let { accountId } = await getJiraId(this.jiraKey, this.jiraEmail);
+			console.log(accountId);
+
 		}
 	},
 	watch: {

@@ -6,21 +6,17 @@
 			</label>
 			<div><img v-if="icon" :src="icon"/> {{ title }}</div>
 		</div>
+		<TimeSpent v-model="worklog.seconds"/>
 		<div class="col">
 			<label class="d-block">
-				<input type="text" class="form-control" name="time[]" placeholder="Time spent" v-model="timeSpent">
-			</label>
-		</div>
-		<div class="col">
-			<label class="d-block">
-				<select class="form-control">
+				<select class="form-control" v-model="worklog.activity">
 					<option v-for="activity in activities" :key="activity" :value="activity">{{ activity }}</option>
 				</select>
 			</label>
 		</div>
 		<div class="col">
 			<label class="d-block">
-				<textarea type="text" class="form-control" name="description[]" placeholder="Description" rows="3"></textarea>
+				<textarea type="text" class="form-control" name="description[]" placeholder="Description" rows="3" v-model="worklog.description"></textarea>
 			</label>
 		</div>
 	</div>
@@ -29,15 +25,17 @@
 <script>
 import _ from 'lodash'
 import axios from 'axios'
-
-const TIME_SPENT_REGEX = /^\D*((?<hours>\d+)[hH])?\D*((?<minutes>\d+)\D*[mM])?\D*$/g;
+import TimeSpent from './TimeSpent.vue'
 
 export default {
 	name: 'Worklog',
+	components: {
+		TimeSpent
+	},
 	data() {
 		return {
 			title: '',
-			icon: ''
+			icon: '',
 		};
 	},
 	props: {
@@ -47,49 +45,10 @@ export default {
 		worklog: Object
 	},
 	computed: {
-		timeSpent: {
-			get() {
-				let seconds = this.worklog.seconds;
-				if (isNaN(seconds)) {
-					return '';
-				}
-
-				let h = Math.floor(seconds / 3600);
-				let m = Math.floor(seconds % 3600 / 60);
-
-				let output = '';
-
-				if (h) {
-					output += h + 'h';
-				}
-
-				if (m) {
-					output += m + 'm';
-				}
-
-				return output;
-			},
-			set(value) {
-				let result = TIME_SPENT_REGEX.exec(value);
-				let timeSpent = 0;
-
-				if (!result) {
-					return;
-				}
-
-				if (result.groups.hours) {
-					timeSpent += parseInt(result.groups.hours) * 3600
-				}
-				if (result.groups.minutes) {
-					timeSpent += parseInt(result.groups.minutes) * 60
-				}
-
-				this.worklog.seconds = timeSpent;
-			}
-		}
 	},
 	created() {
 		this.deboucedJiraUpdate = _.throttle(this.updateJiraTicket, 1000);
+		this.worklog.activity = this.activities[0];
 	},
 	methods: {
 		updateJiraTicket() {
